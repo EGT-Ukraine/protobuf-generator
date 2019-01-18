@@ -1,5 +1,6 @@
 protobuf-generator
 ---
+![https://cloud.docker.com/u/egtukraine/repository/docker/egtukraine/protobuf-generator](https://img.shields.io/docker/automated/egtukraine/protobuf-generator.svg)
 
 Application for packing proto files into Java library and distributing to Nexus repository.
 
@@ -24,7 +25,7 @@ docker run --rm \
 To play with this you could run the [Nexus Docker Image](https://hub.docker.com/r/sonatype/nexus/) and start it locally.
 
 Makefile has two options:  
-  - `build` - will just build the lib by *.proto
+  - `build` - will just build the lib by *.proto and store it by the mounted path `/some/path/to/proto/build/java/`
   - `deploy` - store a built lib to the Nexus Repository
   
 To use the options you should just add `make build` or `make deploy` in the end of the command line:

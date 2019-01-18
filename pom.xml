@@ -81,6 +81,7 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>java</id>
                         <goals>
                             <goal>compile</goal>
                         </goals>
