@@ -13,8 +13,8 @@ all: build deploy
 
 build:
 	./mvnw -DgroupId=${GROUP_ID} -DartifactId=${ARTIFACT_ID} -Dversion=${VERSION} -DprotoSourceRoot=./proto/ clean package
-	mkdir -p ./build/java
-	cp ./target/*.jar ./build/java/
+	mkdir -p ./proto/build/java
+	cp ./target/*.jar ./proto/build/java/
 
 deploy:
 	./mvnw -DserverUrl=${SERVER_URL} -DgroupId=${GROUP_ID} -DartifactId=${ARTIFACT_ID} -Dversion=${VERSION} --settings ${SETTINGS} deploy

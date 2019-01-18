@@ -20,7 +20,7 @@ docker run --rm \
     -e GROUP_ID=com.egt \
     -e ARTIFACT_ID=some-lib \
     -e VERSION=0.0.2 \
-    protobuf-generator
+    egtukraine/protobuf-generator
 ```
 
 To play with this you could run the [Nexus Docker Image](https://hub.docker.com/r/sonatype/nexus/) and start it locally.
@@ -33,7 +33,7 @@ To use the options you should just add `make build` or `make deploy` in the end 
 ```
 docker run --rm \
     ...
-    protobuf-generator make build
+    egtukraine/protobuf-generator make build
 ```
 
 or
@@ -41,5 +41,5 @@ or
 ```
 docker run --rm \
     ...
-    protobuf-generator make deploy
+    egtukraine/protobuf-generator make deploy
 ```
