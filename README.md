@@ -23,6 +23,20 @@ docker run --rm \
     egtukraine/protobuf-generator
 ```
 
+There are two additional options to set endpoints for release & snapshots for Nexus(by default they are equal to paths for Nexus v.3):
+  * RELEASE_ENDPOINT
+  * SNAPSHOT_ENDPOINT
+
+To change them to the lower version you could change it. Ex:
+```
+docker run --rm \
+    ...
+    -e RELEASE_ENDPOINT=/nexus/content/repositories/releases
+    -e SNAPSHOT_ENDPOINT=/nexus/content/repositories/snapshots
+    ...
+    egtukraine/protobuf-generator
+``` 
+
 To play with this you could run the [Nexus Docker Image](https://hub.docker.com/r/sonatype/nexus/) and start it locally.
 
 Makefile has two options:  

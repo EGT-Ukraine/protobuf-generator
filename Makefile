@@ -3,8 +3,13 @@ GROUP_ID ?= com.egt
 ARTIFACT_ID ?= proto-lib
 VERSION ?= 0.0.1
 
-# Server configuration
+# Nexus configuration
 SERVER_URL ?= http://nexus:8081/
+# for old versions:
+# /nexus/content/repositories/releases
+# /nexus/content/repositories/snapshots
+RELEASE_ENDPOINT ?= /repository/maven-releases
+SNAPSHOT_ENDPOINT ?= /repository/maven-snapshots
 
 # Maven settings
 SETTINGS := ./settings.xml
@@ -17,4 +22,4 @@ build:
 	cp ./target/*.jar ./proto/build/java/
 
 deploy:
-	./mvnw -DserverUrl=${SERVER_URL} -DgroupId=${GROUP_ID} -DartifactId=${ARTIFACT_ID} -Dversion=${VERSION} --settings ${SETTINGS} deploy
+	./mvnw -DserverUrl=${SERVER_URL} -DreleaseEndpoint=${RELEASE_ENDPOINT} -DsnapshotEndpoint=${SNAPSHOT_ENDPOINT} -DgroupId=${GROUP_ID} -DartifactId=${ARTIFACT_ID} -Dversion=${VERSION} --settings ${SETTINGS} deploy

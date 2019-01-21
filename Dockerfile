@@ -2,6 +2,8 @@ FROM alpine:3.8
 
 # Nexus settings
 ENV SERVER_URL http://172.17.0.2:8081
+ENV RELEASE_ENDPOINT /repository/maven-releases
+ENV SNAPSHOT_ENDPOINT /repository/maven-snapshots
 ENV USERNAME admin
 ENV PASSWORD admin123
 

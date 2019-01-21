@@ -16,18 +16,20 @@
         <protobuf.plugin.version>0.6.1</protobuf.plugin.version>
         <protobuf.version>3.6.1</protobuf.version>
         <serverUrl>http://localhost:8081/</serverUrl>
+        <releaseEndpoint>/repository/maven-releases</releaseEndpoint>
+        <snapshotEndpoint>/repository/maven-snapshots</snapshotEndpoint>
     </properties>
 
     <distributionManagement>
         <repository>
             <id>localRepo</id>
             <uniqueVersion>true</uniqueVersion>
-            <url>${serverUrl}/nexus/content/repositories/releases</url>
+            <url>${serverUrl}${releaseEndpoint}</url>
         </repository>
         <snapshotRepository>
             <uniqueVersion>false</uniqueVersion>
             <id>localRepo</id>
-            <url>${serverUrl}/nexus/content/repositories/snapshots</url>
+            <url>${serverUrl}${snapshotEndpoint}</url>
         </snapshotRepository>
     </distributionManagement>
 
