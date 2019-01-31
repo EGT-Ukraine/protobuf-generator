@@ -14,6 +14,9 @@ SNAPSHOT_ENDPOINT ?= /repository/maven-snapshots
 # Maven settings
 SETTINGS := ./settings.xml
 
+
+.PHONY: all build deploy
+
 all: build deploy
 
 build:
