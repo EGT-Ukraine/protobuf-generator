@@ -5,17 +5,14 @@ node_js:
 before_install:
   - npm install github-release-notes -g
 
-branches:
-  only:
-    - master
-
 script:
   - npm -v
 
 deploy:
   - provider: script
+    verbose: true
     github-token: $GREN_GITHUB_TOKEN
-    script: ./script/changelog.sh
+    script: bash ./script/changelog.sh
     on:
-      branch: master
+      all_branches: true
       tags: false
