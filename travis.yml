@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "iojs"
+  - "7"
+
+before_script:
+  - npm install github-release-notes -g
+
+deploy:
+  - provider: script
+    github-token: $GREN_GITHUB_TOKEN
+    script: bash script/changelog.sh
+    on:
+      tags: false
