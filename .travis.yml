@@ -5,10 +5,6 @@ node_js:
 before_install:
   - npm install github-release-notes -g
 
-branches:
-  only:
-    - master
-
 script:
   - gren changelog --override
 
