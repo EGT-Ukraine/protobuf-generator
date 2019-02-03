@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+  - "7"
+
+before_install:
+  - npm install github-release-notes -g
+
+branches:
+  only:
+    - master
+
+script:
+  - npm -v
+
+deploy:
+  - provider: script
+    github-token: $GREN_GITHUB_TOKEN
+    script: ./script/changelog.sh
+    on:
+      branch: master
+      tags: false

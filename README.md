@@ -1,14 +1,9 @@
 protobuf-generator
 ---
-[![build](https://img.shields.io/docker/automated/egtukraine/protobuf-generator.svg)](https://hub.docker.com/r/egtukraine/protobuf-generator) [![pulls](https://img.shields.io/docker/pulls/egtukraine/protobuf-generator.svg)](https://hub.docker.com/r/egtukraine/protobuf-generator)
+[![build](https://img.shields.io/docker/automated/egtukraine/protobuf-generator.svg)](https://hub.docker.com/r/egtukraine/protobuf-generator) [![pulls](https://img.shields.io/docker/pulls/egtukraine/protobuf-generator.svg)](https://hub.docker.com/r/egtukraine/protobuf-generator) [![Automated Release Notes by gren](https://img.shields.io/badge/%F0%9F%A4%96-release%20notes-00B2EE.svg)](https://github-tools.github.io/github-release-notes/)
 
 Application([image](https://hub.docker.com/r/egtukraine/protobuf-generator)) for packing proto files into Java library and distributing to Nexus repository.
 
-
-### Build
-```
-docker build -t protobuf-generator .
-```
 
 ### Run
 ```

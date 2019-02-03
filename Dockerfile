@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.9
 
 # Nexus settings
 ENV SERVER_URL http://172.17.0.2:8081
@@ -20,8 +20,8 @@ ENV JAVA_URL_ELEMENT 42970487e3af4f5aa5bca3f542482c60
 ENV JAVA_PACKAGE jdk
 
 RUN apk update && apk add make tar gzip curl ca-certificates
-RUN curl -Ls https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.21-r2/glibc-2.21-r2.apk > /tmp/glibc-2.21-r2.apk && \
-    apk add --allow-untrusted /tmp/glibc-2.21-r2.apk
+RUN curl -Ls https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk > /tmp/glibc-2.28-r0.apk && \
+    apk add --allow-untrusted /tmp/glibc-2.28-r0.apk
 RUN mkdir -p /opt && \
     curl -jkLH "Cookie: oraclelicense=accept-securebackup-cookie" -o java.tar.gz \
     http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_URL_ELEMENT}/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
@@ -55,6 +55,9 @@ ENV PATH ${PATH}:${JAVA_HOME}/bin
 WORKDIR /app
 
 COPY .mvn .mvn
+COPY proto proto
 COPY mvnw Makefile settings.xml pom.xml ./
+
+RUN ./mvnw -B -V -Dstyle.color=always -DgroupId=com.egt -DartifactId=protobuf-generator -Dversion=0.0.1 dependency:go-offline
 
 CMD make

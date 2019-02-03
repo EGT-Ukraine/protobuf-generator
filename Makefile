@@ -20,9 +20,12 @@ SETTINGS := ./settings.xml
 all: build deploy
 
 build:
-	./mvnw -DgroupId=${GROUP_ID} -DartifactId=${ARTIFACT_ID} -Dversion=${VERSION} -DprotoSourceRoot=./proto/ clean package
+	sed -i "s/GROUP_ID/${GROUP_ID}/" pom.xml
+	sed -i "s/ARTIFACT_ID/${ARTIFACT_ID}/" pom.xml
+	sed -i "s/VERSION/${VERSION}/" pom.xml
+	./mvnw -DprotoSourceRoot=./proto/ clean package
 	mkdir -p ./proto/build/java
 	cp ./target/*.jar ./proto/build/java/
 
 deploy:
-	./mvnw -DserverUrl=${SERVER_URL} -DreleaseEndpoint=${RELEASE_ENDPOINT} -DsnapshotEndpoint=${SNAPSHOT_ENDPOINT} -DgroupId=${GROUP_ID} -DartifactId=${ARTIFACT_ID} -Dversion=${VERSION} --settings ${SETTINGS} deploy
+	./mvnw -DserverUrl=${SERVER_URL} -DreleaseEndpoint=${RELEASE_ENDPOINT} -DsnapshotEndpoint=${SNAPSHOT_ENDPOINT} --settings ${SETTINGS} deploy
