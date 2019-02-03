@@ -5,14 +5,17 @@ node_js:
 before_install:
   - npm install github-release-notes -g
 
+branches:
+  only:
+    - master
+
 script:
-  - npm -v
+  - gren changelog --override
 
 deploy:
-  - provider: script
-    verbose: true
+  - provider: releases
     github-token: $GREN_GITHUB_TOKEN
-    script: bash ./script/changelog.sh
-    on:
-      all_branches: true
-      tags: false
+    file: CHANGELOG.md
+    skip_cleanup: true
+      on:
+        tags: true
