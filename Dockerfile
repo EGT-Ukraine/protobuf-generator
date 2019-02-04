@@ -19,7 +19,7 @@ ENV JAVA_VERSION_BUILD 09
 ENV JAVA_URL_ELEMENT 42970487e3af4f5aa5bca3f542482c60
 ENV JAVA_PACKAGE jdk
 
-RUN apk update && apk add make tar gzip curl ca-certificates
+RUN apk update && apk add make tar gzip curl ca-certificates bash
 RUN curl -Ls https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk > /tmp/glibc-2.28-r0.apk && \
     apk add --allow-untrusted /tmp/glibc-2.28-r0.apk
 RUN mkdir -p /opt && \
