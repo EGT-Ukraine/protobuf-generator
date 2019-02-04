@@ -15,6 +15,7 @@
         <java.version>1.8</java.version>
         <protobuf.plugin.version>0.6.1</protobuf.plugin.version>
         <protobuf.version>3.6.1</protobuf.version>
+        <protoc.grpc-java.version>1.18.0</protoc.grpc-java.version>
         <serverUrl>http://localhost:8081/</serverUrl>
         <releaseEndpoint>/repository/maven-releases</releaseEndpoint>
         <snapshotEndpoint>/repository/maven-snapshots</snapshotEndpoint>
@@ -39,6 +40,21 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>${protobuf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+            <version>${protoc.grpc-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>${protoc.grpc-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
+            <version>${protoc.grpc-java.version}</version>
         </dependency>
     </dependencies>
 
@@ -76,12 +92,15 @@
                 <configuration>
                     <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                     <protoSourceRoot>${protoSourceRoot}</protoSourceRoot>
+                    <pluginId>grpc-java</pluginId>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${protoc.grpc-java.version}:exe:${os.detected.classifier}</pluginArtifact>
                 </configuration>
                 <executions>
                     <execution>
                         <id>java</id>
                         <goals>
                             <goal>compile</goal>
+                            <goal>compile-custom</goal>
                         </goals>
                     </execution>
                 </executions>

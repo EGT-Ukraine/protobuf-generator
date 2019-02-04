@@ -1,46 +1,34 @@
-FROM nexus.egt-ua.loc/go-team/protoc as golang-protoc-builder
+FROM golang:1.11-alpine as protoc-builder
 
-#ENV PROTOBUF_VERSION 3.6.1
-#ENV GRPC_VERSION 1.7.2
-#
-#RUN apk update && apk add git curl build-base autoconf automake libtool
-#
-## protoc
-##RUN curl -L -o /tmp/protobuf.tar.gz https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/protobuf-cpp-${PROTOBUF_VERSION}.tar.gz
-##WORKDIR /tmp/
-##RUN tar -zxvf protobuf.tar.gz
-##WORKDIR /tmp/protobuf-${PROTOBUF_VERSION}
-##RUN mkdir /export
-##RUN ./autogen.sh && \
-##    ./configure --prefix=/export && \
-##    make -j 5 && \
-##    make install
-#
-## Install protoc-gen-go
-#RUN mkdir -p /grpc && cd /grpc && \
-#        git clone -b v${GRPC_VERSION} https://github.com/grpc/grpc . && \
-#        git submodule update --init
-#RUN ls -lia /grpc/third_party/protobuf
-#
-## Install gRPC
-#RUN cd /grpc && \
-#    make && \
-#    make -j 5 install && \
-#    ldconfig
-#
-## Install gRPC plugins
-#RUN cd /grpc && \
-#    make clean && \
-#    make plugins
-#
-#RUN go get -u -v github.com/golang/protobuf/protoc-gen-go
-#
-#RUN cp /go/bin/protoc-gen-go /export/bin/
-#RUN cp -r /usr/lib/libstdc* /export/lib/
-#RUN cp -r /usr/lib/libgcc_s* /export/lib/
+ENV PROTOBUF_VERSION 3.6.1
+ENV GRPC_VERSION 1.18.0
+ENV OUTDIR "/export"
 
-#RUN apk add mlocate && updatedb && locate timestamp.proto
-RUN apt-get install mlocate && updatedb && locate libprotobuf.so.14
+RUN apk --update --no-cache add build-base curl automake autoconf libtool git zlib-dev git
+
+RUN mkdir -p /protobuf && \
+        curl -L https://github.com/google/protobuf/archive/v${PROTOBUF_VERSION}.tar.gz | tar xvz --strip-components=1 -C /protobuf
+
+RUN git clone --depth 1 --recursive -b v${GRPC_VERSION} https://github.com/grpc/grpc.git /grpc && \
+        rm -rf grpc/third_party/protobuf && \
+        ln -s /protobuf /grpc/third_party/protobuf
+
+RUN cd /protobuf && \
+        autoreconf -f -i -Wall,no-obsolete && \
+        ./configure --prefix=/usr --enable-static=no && \
+        make -j5 && make install
+RUN cd /grpc && \
+        make -j5 plugins
+
+RUN cd /protobuf && \
+        make install DESTDIR=${OUTDIR}
+RUN cd /grpc && \
+        make install-plugins prefix=${OUTDIR}/usr
+
+RUN go get -u -v -ldflags '-w -s' \
+        github.com/golang/protobuf/protoc-gen-go \
+        && install -c ${GOPATH}/bin/protoc-gen* ${OUTDIR}/usr/bin/
+
 
 ## Main container
 FROM alpine:3.9
@@ -64,7 +52,7 @@ ENV JAVA_VERSION_BUILD 09
 ENV JAVA_URL_ELEMENT 42970487e3af4f5aa5bca3f542482c60
 ENV JAVA_PACKAGE jdk
 
-RUN apk update && apk add make tar gzip curl ca-certificates build-base autoconf automake libtool
+RUN apk update && apk add make tar gzip curl ca-certificates bash build-base autoconf automake libtool git
 RUN curl -Ls https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk > /tmp/glibc-2.28-r0.apk && \
     apk add --allow-untrusted /tmp/glibc-2.28-r0.apk
 RUN mkdir -p /opt && \
@@ -98,19 +86,10 @@ ENV JAVA_HOME /opt/jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR}
 ENV PATH ${PATH}:${JAVA_HOME}/bin
 
 ## protobuf-go-gen
-#COPY --from=golang-protoc-builder /export/bin/protoc-gen-go /usr/bin/
-#COPY --from=golang-protoc-builder /export/bin/protoc /usr/bin/
-#COPY --from=golang-protoc-builder /export/lib/libstdc* /usr/lib/
-#COPY --from=golang-protoc-builder /export/lib/libgcc_s** /usr/lib/
-#COPY --from=golang-protoc-builder /export/lib/libprotoc.so.17 /lib/
-#COPY --from=golang-protoc-builder /export/lib/libprotoc.so.17.0.0 /lib/
-#COPY --from=golang-protoc-builder /export/lib/libprotobuf.so.17 /lib/
-#COPY --from=golang-protoc-builder /export/include /
-#COPY --from=golang-protoc-builder /go/src/github.com/golang/protobuf /go/src/github.com/golang/
-COPY --from=golang-protoc-builder /usr/local/bin/protoc /usr/local/bin/protoc
-COPY --from=golang-protoc-builder /usr/local/lib/libprotobuf.so /usr/lib/
-COPY --from=golang-protoc-builder /usr/local/lib/libprotobuf.so.14 /usr/lib/
-COPY --from=golang-protoc-builder /usr/local/lib/libprotobuf.so.14.0.0 /usr/lib/
+COPY --from=protoc-builder /export/usr/bin/protoc /usr/bin/protoc
+COPY --from=protoc-builder /export/usr/bin/protoc-gen-go /usr/bin/protoc-gen-go
+COPY --from=protoc-builder /export/usr/include/google /usr/include/google
+COPY --from=protoc-builder /export/usr/lib/libproto* /usr/lib/
 
 ## general
 WORKDIR /app
@@ -119,6 +98,6 @@ COPY .mvn .mvn
 COPY proto proto
 COPY mvnw Makefile settings.xml pom.xml ./
 
-#RUN ./mvnw -B -V -Dstyle.color=always -DgroupId=com.egt -DartifactId=protobuf-generator -Dversion=0.0.1 dependency:go-offline
+RUN ./mvnw -B -V -Dstyle.color=always -DgroupId=com.egt -DartifactId=protobuf-generator -Dversion=0.0.1 dependency:go-offline
 
 CMD make

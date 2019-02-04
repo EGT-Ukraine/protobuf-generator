@@ -28,8 +28,8 @@ build-java:
 	cp ./target/*.jar ./proto/build/java/
 
 build-go:
-	mkdir -p ./proto/build/go
-	protoc-gen-go --go_out=paths=source_relative,plugins=grpc:./proto/build/go/ `find . -type f -name "*.proto"|xargs`
+	mkdir -p ./proto/build/go/
+	cd ./proto; protoc --go_out=paths=source_relative,plugins=grpc:./build/go/ `find . -type f -name "*.proto"|xargs`
 
 deploy-java:
 	./mvnw -DserverUrl=${SERVER_URL} -DreleaseEndpoint=${RELEASE_ENDPOINT} -DsnapshotEndpoint=${SNAPSHOT_ENDPOINT} --settings ${SETTINGS} deploy
