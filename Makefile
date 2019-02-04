@@ -15,11 +15,11 @@ SNAPSHOT_ENDPOINT ?= /repository/maven-snapshots
 SETTINGS := ./settings.xml
 
 
-.PHONY: all build deploy
+.PHONY: all build-java build-go deploy-java
 
-all: build deploy
+all: build-java build-go deploy-java
 
-build:
+build-java:
 	sed -i "s/GROUP_ID/${GROUP_ID}/" pom.xml
 	sed -i "s/ARTIFACT_ID/${ARTIFACT_ID}/" pom.xml
 	sed -i "s/VERSION/${VERSION}/" pom.xml
@@ -27,5 +27,9 @@ build:
 	mkdir -p ./proto/build/java
 	cp ./target/*.jar ./proto/build/java/
 
-deploy:
+build-go:
+	mkdir -p ./proto/build/go/
+	cd ./proto; protoc --go_out=paths=source_relative,plugins=grpc:./build/go/ `find . -type f -name "*.proto"|xargs`
+
+deploy-java:
 	./mvnw -DserverUrl=${SERVER_URL} -DreleaseEndpoint=${RELEASE_ENDPOINT} -DsnapshotEndpoint=${SNAPSHOT_ENDPOINT} --settings ${SETTINGS} deploy
