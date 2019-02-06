@@ -11,6 +11,9 @@ SERVER_URL ?= http://nexus:8081/
 RELEASE_ENDPOINT ?= /repository/maven-releases
 SNAPSHOT_ENDPOINT ?= /repository/maven-snapshots
 
+# proto path prefix for generating code
+PATH_PREFIX ?= proto
+
 # Maven settings
 SETTINGS := ./settings.xml
 
@@ -30,15 +33,15 @@ clean:
 
 build-java: replaceProjectVar
 	./mvnw -DprotoSourceRoot=./proto/ package
-	mkdir -p ./proto/build/java
-	cp ./target/*.jar ./proto/build/java/
+	mkdir -p ./proto/${PATH_PREFIX}/java
+	cp ./target/*.jar ./proto/${PATH_PREFIX}/java/
 
 build-go:
-	mkdir -p ./proto/build/go/
-	cd ./proto; protoc --go_out=paths=source_relative,plugins=grpc:./build/go/ `find . -type f -name "*.proto"|xargs`
+	mkdir -p ./proto/${PATH_PREFIX}/go/
+	cd ./proto; protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ `find . -type f -name "*.proto"|xargs`
 
 build-python: replaceProjectVar
-	./mvnw -DprotoSourceRoot=./proto/ -DpythonOutputDirectory=./proto/build/python protobuf:compile-python
+	./mvnw -DprotoSourceRoot=./proto/ -DpythonOutputDirectory=./proto/${PATH_PREFIX}/python protobuf:compile-python
 
 deploy-java:
 	./mvnw -DserverUrl=${SERVER_URL} -DreleaseEndpoint=${RELEASE_ENDPOINT} -DsnapshotEndpoint=${SNAPSHOT_ENDPOINT} --settings ${SETTINGS} deploy

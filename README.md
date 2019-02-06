@@ -9,6 +9,7 @@ Application([image](https://hub.docker.com/r/egtukraine/protobuf-generator)) for
 ```
 docker run --rm \
     -v /some/path/to/proto:/app/proto \
+    -e PATH_PREFIX=build
     -e SERVER_URL=http://nexus:8081 \
     -e USERNAME=admin \
     -e PASSWORD=admin123 \
@@ -18,6 +19,9 @@ docker run --rm \
     egtukraine/protobuf-generator
 ```
 
+`PATH_PREFIX` - path in which protobuf will be generated in your proto repo.
+ 
+  
 There are two additional options to set endpoints for release & snapshots for Nexus(by default they are equal to paths for Nexus v.3):
   * RELEASE_ENDPOINT
   * SNAPSHOT_ENDPOINT
