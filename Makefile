@@ -12,7 +12,7 @@ RELEASE_ENDPOINT ?= /repository/maven-releases
 SNAPSHOT_ENDPOINT ?= /repository/maven-snapshots
 
 # proto path prefix for generating code
-PATH_PREFIX ?= proto
+PATH_PREFIX ?= build
 
 # Maven settings
 SETTINGS := ./settings.xml
