@@ -17,6 +17,9 @@ PATH_PREFIX ?= build
 # Maven settings
 SETTINGS := ./settings.xml
 
+# golang specific
+GO_COMPILE_DIR_ORDER ?=
+
 
 .PHONY: all clean build-java build-go build-python deploy-java
 
@@ -38,7 +41,13 @@ build-java: replaceProjectVar
 
 build-go:
 	mkdir -p ./proto/${PATH_PREFIX}/go/
-	cd ./proto; protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ `find . -type f -name "*.proto"|xargs`
+    ifeq (${GO_COMPILE_DIR_ORDER},)
+		cd ./proto; protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ `find . -type f -name "*.proto"|xargs`
+    else
+	for PROTO_DIR in ${GO_COMPILE_DIR_ORDER};do \
+		cd ./proto && protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ `find $${PROTO_DIR} -type f -name "*.proto"|xargs` && cd ../; \
+	done
+    endif
 
 build-python: replaceProjectVar
 	./mvnw -DprotoSourceRoot=./proto/ -DpythonOutputDirectory=./proto/${PATH_PREFIX}/python protobuf:compile-python

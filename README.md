@@ -4,6 +4,23 @@ protobuf-generator
 
 Application([image](https://hub.docker.com/r/egtukraine/protobuf-generator)) for packing proto files into Golang protobuf, python protobuf or Java library. Also, Java libs could be distributed to Nexus repository with the container.
 
+### Golang protobuf specific
+##### Multiple packages in your project
+If you have proto structure with multiple packages like:
+```
+coolstuffproto
+    |
+     - pkg1
+    |
+     - pkg2
+    |
+     ...
+```
+you should use `GO_COMPILE_DIR_ORDER` variable to set compile order to avoid `inconsistent package import paths` error. Because, Golang's protobuf plugin requires that you pass all proto files in a single go package together on the commandline.
+In this case you should pass as a variable: 
+```
+GO_COMPILE_DIR_ORDER='coolstuffproto/pkg1 coolstuffproto/pkg2'
+```
 
 ### Run
 ```
