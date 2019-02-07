@@ -17,7 +17,7 @@ coolstuffproto
      ...
 ```
 you should use `GO_COMPILE_DIR_ORDER` variable to set compile order to avoid `inconsistent package import paths` error. Because, Golang's protobuf plugin requires that you pass all proto files in a single go package together on the commandline.
-In this case you should pass as a variable: 
+In this case you should pass it as a variable: 
 ```
 GO_COMPILE_DIR_ORDER='coolstuffproto/pkg1 coolstuffproto/pkg2'
 ```
