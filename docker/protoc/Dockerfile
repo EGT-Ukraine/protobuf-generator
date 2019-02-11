@@ -2,6 +2,7 @@ FROM golang:1.11-alpine
 
 ENV PROTOBUF_VERSION 3.6.1
 ENV GRPC_VERSION 1.18.0
+ENV PROTOC_GO_VERSION 1.2.0
 ENV OUTDIR "/export"
 
 RUN apk --update --no-cache add build-base curl automake autoconf libtool git zlib-dev git
@@ -25,6 +26,9 @@ RUN cd /protobuf && \
 RUN cd /grpc && \
         make install-plugins prefix=${OUTDIR}/usr
 
-RUN go get -u -v -ldflags '-w -s' \
-        github.com/golang/protobuf/protoc-gen-go \
-        && install -c ${GOPATH}/bin/protoc-gen* ${OUTDIR}/usr/bin/
+RUN go get -u -d -v -ldflags '-w -s' \
+        github.com/golang/protobuf/protoc-gen-go && \
+        cd $GOPATH/src/github.com/golang/protobuf/protoc-gen-go && \
+        git checkout tags/v${PROTOC_GO_VERSION} -b v${PROTOC_GO_VERSION} && \
+        go install && \
+        install -c ${GOPATH}/bin/protoc-gen* ${OUTDIR}/usr/bin/
