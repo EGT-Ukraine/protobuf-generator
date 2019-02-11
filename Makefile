@@ -35,12 +35,16 @@ clean:
 	./mvnw clean
 
 build-java: replaceProjectVar
+	@echo "cleaning previouse Java Build"
+	@rm -rf ./proto/${PATH_PREFIX}/java
 	./mvnw -DprotoSourceRoot=./proto/ package
 	mkdir -p ./proto/${PATH_PREFIX}/java
 	cp ./target/*.jar ./proto/${PATH_PREFIX}/java/
 
 build-go:
-	mkdir -p ./proto/${PATH_PREFIX}/go/
+	@echo "cleaning previouse Go Build"
+	@rm -rf ./proto/${PATH_PREFIX}/go
+	@mkdir -p ./proto/${PATH_PREFIX}/go
     ifeq (${GO_COMPILE_DIR_ORDER},)
 		cd ./proto; protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ `find . -type f -name "*.proto"|xargs`
     else
@@ -50,6 +54,8 @@ build-go:
     endif
 
 build-python: replaceProjectVar
+	@echo "cleaning previouse Python Build"
+	@rm -rf ./proto/${PATH_PREFIX}/python
 	./mvnw -DprotoSourceRoot=./proto/ -DpythonOutputDirectory=./proto/${PATH_PREFIX}/python protobuf:compile-python
 
 deploy-java:
