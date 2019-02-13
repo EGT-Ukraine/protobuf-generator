@@ -17,12 +17,13 @@ PATH_PREFIX ?= build
 # Maven settings
 SETTINGS := ./settings.xml
 
-# golang specific
-GO_COMPILE_DIR_ORDER ?=
-
-
 .PHONY: all clean build-java build-go build-python deploy-java
 
+define GO_GENERATE
+	$(eval DIR = ${1})
+	echo "Parse proto files in: ${DIR}"
+	cd ./proto && protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ -I. `find ./${DIR} -type f -name "*.proto"`
+endef
 
 all: clean build-java build-go build-python deploy-java
 
@@ -45,13 +46,8 @@ build-go:
 	@echo "cleaning previouse Go Build"
 	@rm -rf ./proto/${PATH_PREFIX}/go
 	@mkdir -p ./proto/${PATH_PREFIX}/go
-    ifeq (${GO_COMPILE_DIR_ORDER},)
-		cd ./proto; protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ `find . -type f -name "*.proto"|xargs`
-    else
-	for PROTO_DIR in ${GO_COMPILE_DIR_ORDER};do \
-		cd ./proto && protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ `find $${PROTO_DIR} -type f -name "*.proto"|xargs` && cd ../; \
-	done
-    endif
+	@$(eval SERVICES = $(shell cd ./proto && find . -type f -name '*.proto' | grep -o "\(.*\)/" | sort -u))
+	@$(foreach SERVICE,${SERVICES},$(call GO_GENERATE,${SERVICE});)
 
 build-python: replaceProjectVar
 	@echo "cleaning previouse Python Build"
