@@ -12,6 +12,7 @@ ENV PASSWORD admin123
 ENV GROUP_ID com.egt
 ENV ARTIFACT_ID some-lib
 ENV VERSION 0.0.1
+ENV GOGO_PROTOBUF 0
 
 # Java ENV
 ENV JAVA_VERSION_MAJOR 8
@@ -56,6 +57,7 @@ ENV PATH ${PATH}:${JAVA_HOME}/bin
 ## protobuf-go-gen
 COPY --from=egtukraine/protoc /export/usr/bin/protoc /usr/bin/protoc
 COPY --from=egtukraine/protoc /export/usr/bin/protoc-gen-go /usr/bin/protoc-gen-go
+COPY --from=egtukraine/protoc /go/bin/protoc-gen-gogofaster /usr/bin/protoc-gen-gogofaster
 COPY --from=egtukraine/protoc /export/usr/include/google /usr/include/google
 COPY --from=egtukraine/protoc /export/usr/lib/libproto* /usr/lib/
 
