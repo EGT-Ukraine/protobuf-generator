@@ -1,7 +1,7 @@
 FROM golang:1.11-alpine
 
 ENV PROTOBUF_VERSION 3.6.1
-ENV GRPC_VERSION 1.18.0
+ENV GRPC_VERSION 1.22.0
 ENV PROTOC_GO_VERSION 1.2.0
 ENV OUTDIR "/export"
 
@@ -32,3 +32,5 @@ RUN go get -u -d -v -ldflags '-w -s' \
         git checkout tags/v${PROTOC_GO_VERSION} -b v${PROTOC_GO_VERSION} && \
         go install && \
         install -c ${GOPATH}/bin/protoc-gen* ${OUTDIR}/usr/bin/
+
+RUN go get github.com/gogo/protobuf/protoc-gen-gogofaster

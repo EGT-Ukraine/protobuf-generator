@@ -2,6 +2,7 @@
 GROUP_ID ?= com.egt
 ARTIFACT_ID ?= proto-lib
 VERSION ?= 0.0.1
+GOGO_PROTOBUF ?= 0
 
 # Nexus configuration
 SERVER_URL ?= http://nexus:8081/
@@ -23,6 +24,12 @@ define GO_GENERATE
 	$(eval DIR = ${1})
 	echo "Parse proto files in: ${DIR}"
 	cd ./proto && protoc --go_out=paths=source_relative,plugins=grpc:./${PATH_PREFIX}/go/ -I. `find ./${DIR} -type f -name "*.proto"`
+endef
+
+define GOGO_GENERATE
+	$(eval DIR = ${1})
+	echo "Parse proto files in: ${DIR}"
+	cd ./proto && protoc --gogofaster_out=Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/field_mask.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/source_context.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/type.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,plugins=grpc:./${PATH_PREFIX}/go/ -I. -I/usr/local/include `find ./${DIR} -type f -name "*.proto"`
 endef
 
 all: clean build-java build-go build-python deploy-java
@@ -47,7 +54,13 @@ build-go:
 	@rm -rf ./proto/${PATH_PREFIX}/go
 	@mkdir -p ./proto/${PATH_PREFIX}/go
 	@$(eval SERVICES = $(shell cd ./proto && find . -type f -name '*.proto' | grep -o "\(.*\)/" | sort -u))
+ifeq ($(GOGO_PROTOBUF), 1)
+	@echo "Generating with gogo/protobuf"
+	@$(foreach SERVICE,${SERVICES},$(call GOGO_GENERATE,${SERVICE});)
+else
+	@echo "Generating with golang/protobuf"
 	@$(foreach SERVICE,${SERVICES},$(call GO_GENERATE,${SERVICE});)
+endif
 
 build-python: replaceProjectVar
 	@echo "cleaning previouse Python Build"
